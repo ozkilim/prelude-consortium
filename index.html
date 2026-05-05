@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PRELUDE: Predicting Recurrence in Early Lung Adenocarcinoma</title>
+<meta name="description" content="PRELUDE: an international research consortium pairing whole-slide histology with omics to predict relapse in stage IA / IB lung adenocarcinoma." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #f7f8fb;
+    --bg-2: #ffffff;
+    --ink: #0a0c14;
+    --ink-soft: #4a4e5a;
+    --ink-faint: #8a8e99;
+    --rule: rgba(10,12,20,0.08);
+    --rule-strong: rgba(10,12,20,0.16);
+    --accent: #1e40ff;
+    --accent-dim: #4f6dff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    font-weight:400;
+    font-size:16px;
+    line-height:1.55;
+    overflow-x:hidden;
+    background-image:
+      radial-gradient(1100px 600px at 78% -10%, rgba(30,64,255,0.06), transparent 60%),
+      radial-gradient(900px 500px at -10% 30%, rgba(30,64,255,0.03), transparent 60%);
+    background-attachment:fixed;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+  .display{font-family:'Bricolage Grotesque',sans-serif;font-weight:400;letter-spacing:-0.025em}
+  .mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:400}
+
+  a{color:inherit;text-decoration:none;transition:color .2s,opacity .2s}
+
+  .eyebrow{
+    font-family:'JetBrains Mono',ui-monospace,monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.18em;
+    color:var(--accent);
+    font-weight:500;
+  }
+
+  /* ───── nav ───── */
+  nav.top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:24px 0;border-bottom:1px solid var(--rule);
+  }
+  nav.top .brand{
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-weight:500;font-size:20px;letter-spacing:-0.02em;
+    display:flex;align-items:center;gap:10px;
+  }
+  nav.top .brand .lung-mark{
+    width:24px;height:auto;
+    display:inline-block;
+    transition:transform .25s ease;
+  }
+  nav.top:hover .lung-mark{transform:scale(1.06)}
+  nav.top .right{display:flex;gap:28px;font-size:13px;color:var(--ink-soft);font-family:'JetBrains Mono',monospace;letter-spacing:0.04em}
+  nav.top .right a:hover{color:var(--accent)}
+
+  /* ───── hero ───── */
+  header.hero{padding:96px 0 112px;position:relative}
+  header.hero .eyebrow{margin-bottom:32px;display:flex;align-items:center;gap:10px}
+  header.hero h1{
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-weight:300;
+    font-variation-settings:"opsz" 96, "wght" 320;
+    font-size:clamp(80px, 14.5vw, 200px);
+    line-height:0.92;
+    letter-spacing:-0.05em;
+    margin-bottom:40px;
+  }
+  header.hero h1 .accent{color:var(--accent)}
+  header.hero .lung-hero{
+    display:block;
+    width:clamp(72px, 9vw, 112px);
+    height:auto;
+    margin-bottom:28px;
+    transition:transform .4s cubic-bezier(.2,.8,.2,1);
+  }
+  header.hero:hover .lung-hero{transform:translateY(-3px) scale(1.04)}
+  header.hero .hero-caption{
+    font-family:'JetBrains Mono',ui-monospace,monospace;
+    font-size:13px;
+    letter-spacing:0.04em;
+    color:var(--ink-soft);
+    margin:-16px 0 36px;
+    padding-left:2px;
+  }
+  header.hero .hero-caption .b{color:var(--accent);font-weight:500}
+  header.hero .lede{
+    font-size:clamp(20px,2.3vw,26px);
+    line-height:1.45;
+    color:var(--ink);
+    max-width:720px;
+    font-weight:300;
+    margin-bottom:48px;
+    letter-spacing:-0.005em;
+  }
+  header.hero .lede .hl{
+    color:var(--accent);
+    border-bottom:1px solid var(--accent-dim);
+    padding-bottom:1px;
+  }
+
+  .actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .cta{
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--accent);color:#ffffff;
+    padding:15px 26px;border-radius:999px;
+    font-size:14px;font-weight:600;letter-spacing:-0.005em;
+    transition:transform .15s,box-shadow .15s,background .15s;
+  }
+  .cta:hover{background:#0026d8;transform:translateY(-1px);box-shadow:0 12px 32px rgba(30,64,255,0.28)}
+  .cta .arrow{transition:transform .2s;font-size:15px;line-height:1}
+  .cta:hover .arrow{transform:translateX(3px)}
+  .ghost{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:14px 22px;border-radius:999px;
+    border:1px solid var(--rule-strong);
+    font-size:14px;color:var(--ink-soft);
+    font-family:'JetBrains Mono',monospace;letter-spacing:0.02em;
+  }
+  .ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ───── section ───── */
+  section{padding:112px 0;border-top:1px solid var(--rule)}
+  section .head{display:flex;gap:20px;align-items:flex-start;margin-bottom:40px;flex-wrap:wrap}
+  section .head .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;color:var(--accent);
+    letter-spacing:0.1em;
+    flex-shrink:0;padding-top:18px;
+  }
+  section h2{
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-weight:400;
+    font-variation-settings:"opsz" 72, "wght" 380;
+    font-size:clamp(38px,5.2vw,64px);
+    line-height:1.05;
+    letter-spacing:-0.025em;
+    max-width:880px;
+  }
+  section h2 .accent{color:var(--accent)}
+  section p{
+    font-size:17px;line-height:1.55;color:var(--ink-soft);max-width:680px;
+  }
+  section p strong{color:var(--ink);font-weight:500}
+  section p + p{margin-top:14px}
+
+  /* stats */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:0;
+    margin-top:64px;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+  }
+  .stats .stat{
+    padding:36px 28px 36px 0;
+    border-right:1px solid var(--rule);
+  }
+  .stats .stat:nth-child(n+2){padding-left:28px}
+  .stats .stat:last-child{border-right:none;padding-right:0}
+  .stats .stat .num{
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-variation-settings:"opsz" 96,"wght" 350;
+    font-size:clamp(56px,7vw,96px);
+    line-height:1;
+    letter-spacing:-0.04em;
+    color:var(--accent);
+  }
+  .stats .stat .label{
+    margin-top:18px;
+    font-family:'JetBrains Mono',ui-monospace,monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.16em;
+    color:var(--ink-faint);
+  }
+  .stats .stat .sub{
+    margin-top:8px;
+    font-size:14px;color:var(--ink-soft);max-width:220px;
+  }
+
+  /* the ask */
+  .ask{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    margin-top:48px;
+    background:var(--rule-strong);
+    border:1px solid var(--rule-strong);
+  }
+  .ask .item{
+    background:var(--bg);
+    padding:32px 24px 36px;
+    transition:background .2s;
+  }
+  .ask .item:hover{background:var(--bg-2)}
+  .ask .item .n{
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    color:var(--accent);letter-spacing:0.1em;
+  }
+  .ask .item .k{
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-size:26px;font-weight:500;line-height:1.1;letter-spacing:-0.015em;
+    margin-top:18px;margin-bottom:12px;
+  }
+  .ask .item .v{font-size:14px;color:var(--ink-soft);line-height:1.55}
+
+  /* milestone */
+  .milestone{
+    margin-top:72px;
+    display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;
+    padding:48px 0 8px;border-top:1px solid var(--rule);
+  }
+  .milestone .big{
+    font-family:'Bricolage Grotesque',sans-serif;
+    font-variation-settings:"opsz" 96,"wght" 320;
+    font-size:clamp(96px,16vw,200px);
+    line-height:0.85;
+    letter-spacing:-0.06em;
+    color:var(--ink);
+  }
+  .milestone .big .accent{color:var(--accent)}
+  .milestone .text{
+    font-size:16px;color:var(--ink-soft);max-width:380px;
+  }
+  .milestone .text .label{
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    color:var(--accent);letter-spacing:0.14em;text-transform:uppercase;
+    margin-bottom:14px;
+  }
+
+  /* institutions */
+  .inst{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:1px;margin-top:48px;background:var(--rule-strong);
+    border:1px solid var(--rule-strong);
+  }
+  .inst .card{
+    background:var(--bg);
+    padding:36px 32px;
+    display:flex;flex-direction:column;justify-content:space-between;
+    min-height:200px;transition:background .2s;
+  }
+  .inst .card:hover{background:var(--bg-2)}
+  .inst .card .row{
+    display:flex;justify-content:space-between;align-items:flex-start;
+    font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-faint);
+    letter-spacing:0.12em;
+  }
+  .inst .card .row .dot{
+    width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:0.8;
+  }
+  .inst .card .name{
+    font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:500;
+    line-height:1.15;letter-spacing:-0.02em;
+  }
+  .inst .card .loc{font-size:13px;color:var(--ink-faint);margin-top:6px;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em}
+
+  /* big CTA */
+  section.join{padding:160px 0 140px;text-align:center;border-top:1px solid var(--rule);position:relative;overflow:hidden}
+  section.join::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(700px 360px at 50% 100%, rgba(30,64,255,0.10), transparent 60%);
+    pointer-events:none;
+  }
+  section.join h2{
+    margin:0 auto 36px;text-align:center;
+    font-size:clamp(64px,10vw,140px);line-height:0.95;letter-spacing:-0.04em;
+    max-width:none;font-weight:400;
+    font-variation-settings:"opsz" 96, "wght" 350;
+    position:relative;
+  }
+  section.join h2 .accent{color:var(--accent)}
+  section.join p{margin:0 auto 48px;text-align:center;max-width:520px;font-size:17px;position:relative}
+  section.join .actions{justify-content:center;position:relative}
+
+  /* footer */
+  footer{
+    padding:32px 0 48px;border-top:1px solid var(--rule);
+    display:flex;justify-content:space-between;flex-wrap:wrap;gap:14px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;color:var(--ink-faint);letter-spacing:0.04em;
+  }
+  footer a{color:var(--ink-faint)}
+  footer a:hover{color:var(--accent)}
+
+  /* responsive */
+  @media (max-width:760px){
+    .stats{grid-template-columns:1fr;border:none}
+    .stats .stat{border-right:none;border-bottom:1px solid var(--rule);padding:28px 0!important}
+    .stats .stat:last-child{border-bottom:none}
+    .ask{grid-template-columns:1fr}
+    .inst{grid-template-columns:1fr}
+    nav.top .right{display:none}
+    section{padding:80px 0}
+    header.hero{padding:64px 0 80px}
+    .milestone{grid-template-columns:1fr;gap:24px;align-items:flex-start}
+  }
+</style>
+</head>
+<body>
+
+<!-- shared SVG icon library -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="lung" viewBox="0 0 200 220">
+      <!-- thin segmented trachea (cartilage rings shown as 8 stacked rounded bars) -->
+      <g>
+        <rect x="93" y="4"   width="14" height="9" rx="3"/>
+        <rect x="93" y="15"  width="14" height="9" rx="3"/>
+        <rect x="93" y="26"  width="14" height="9" rx="3"/>
+        <rect x="93" y="37"  width="14" height="9" rx="3"/>
+        <rect x="93" y="48"  width="14" height="9" rx="3"/>
+        <rect x="93" y="59"  width="14" height="9" rx="3"/>
+        <rect x="93" y="70"  width="14" height="9" rx="3"/>
+        <rect x="93" y="81"  width="14" height="11" rx="3"/>
+      </g>
+      <!-- left lobe (dominant, large, rounded) -->
+      <path d="M 96 92
+               C 56 92, 14 124, 12 170
+               C 10 200, 32 218, 62 216
+               C 86 214, 100 196, 100 168
+               L 100 92 Z"/>
+      <!-- right lobe (mirror) -->
+      <path d="M 104 92
+               C 144 92, 186 124, 188 170
+               C 190 200, 168 218, 138 216
+               C 114 214, 100 196, 100 168
+               L 100 92 Z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+  <nav class="top">
+    <div class="brand"><img src="lung.png" class="lung-mark" alt=""> PRELUDE</div>
+    <div class="right">
+      <a href="#pilot">Pilot</a>
+      <a href="#ask">Contribute</a>
+      <a href="#join">Join</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="eyebrow">// An international research consortium · est. 2026</div>
+    <img src="lung.png" class="lung-hero" alt="">
+    <h1 class="display">PRELUDE<span class="accent">.</span></h1>
+    <div class="hero-caption"><span class="b">P</span>redicting <span class="b">R</span>ecurrence in <span class="b">E</span>arly <span class="b">LU</span>ng a<span class="b">DE</span>nocarcinoma</div>
+    <p class="lede">
+      Predicting stage I lung adenocarcinoma relapse is no longer a <span class="hl">technology problem.</span> It is a <span class="hl">coordination problem.</span> PRELUDE is the community pooling whole-slide histology and omics across institutions to fix it.
+    </p>
+    <div class="actions">
+      <a href="#join" class="cta">Contribute a cohort <span class="arrow">→</span></a>
+      <a href="https://www.medrxiv.org/content/10.64898/2026.01.28.26344973v3" target="_blank" rel="noopener" class="ghost">Read the pilot ↗</a>
+    </div>
+  </header>
+
+  <section id="pilot">
+    <div class="head">
+      <div class="num">[01]</div>
+      <h2>One in three patients with stage I lung adenocarcinoma <span class="accent">relapses.</span> Today's staging cannot tell us which.</h2>
+    </div>
+    <p>
+      Our pilot, <strong>PATH-ORACLE</strong> (medRxiv, 2026), trained a foundation-model predictor on 272 stage IA/IB cases from TCGA-LUAD and validated across CPTAC, TRACERx, and KORANYI. Multimodality, histology fused with transcriptomics, beat either alone.
+    </p>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="num">0.70</div>
+        <div class="label">Pooled C-index</div>
+        <div class="sub">Multimodal vs. 0.63 WSI alone</div>
+      </div>
+      <div class="stat">
+        <div class="num">0.75</div>
+        <div class="label">2-yr AUC</div>
+        <div class="sub">CPTAC &amp; TRACERx validation</div>
+      </div>
+      <div class="stat">
+        <div class="num">3</div>
+        <div class="label">External cohorts</div>
+        <div class="sub">CPTAC · TRACERx · KORANYI</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="case">
+    <div class="head">
+      <div class="num">[02]</div>
+      <h2>The tech is here. <span class="accent">The data is fragmented.</span></h2>
+    </div>
+    <p>
+      Foundation pathology models have arrived. Transcriptomic profiling is routine. Our pilot showed the math fuses cleanly on 272 stage I cases. <strong>The biomarker works.</strong>
+    </p>
+    <p>
+      What's missing is scale. The world's stage IA and IB lung adenocarcinoma WSIs and matched omics sit in institutional silos of 50, 100, 200 cases. No single cohort, however carefully curated, reaches the levels required for clinical translation. Pooled, they do.
+    </p>
+    <p>
+      <strong>PRELUDE is a community effort.</strong> Federated by design, contributor-built, contributor-credited. Your data stays with your institution. Your name goes on the paper. Joined, we move the needle. Alone, we don't.
+    </p>
+  </section>
+
+  <section id="ask">
+    <div class="head">
+      <div class="num">[03]</div>
+      <h2>What we are <span class="accent">asking</span> for.</h2>
+    </div>
+    <p>
+      From each joining site, four things:
+    </p>
+
+    <div class="ask">
+      <div class="item">
+        <div class="n">→ 01</div>
+        <div class="k">WSIs</div>
+        <div class="v">H&amp;E of the resected primary, scanned at 20× or 40×.</div>
+      </div>
+      <div class="item">
+        <div class="n">→ 02</div>
+        <div class="k">Omics</div>
+        <div class="v">Bulk transcriptomics preferred. WES, methylation, proteomics welcomed.</div>
+      </div>
+      <div class="item">
+        <div class="n">→ 03</div>
+        <div class="k">Outcomes</div>
+        <div class="v">Recurrence status with date, plus core clinicopathologic variables.</div>
+      </div>
+      <div class="item">
+        <div class="n">→ 04</div>
+        <div class="k">A lead</div>
+        <div class="v">A pathologist, oncologist, or PI willing to co-author and steer protocol.</div>
+      </div>
+    </div>
+
+    <div class="milestone">
+      <div class="big">5,<span class="accent">000</span></div>
+      <div class="text">
+        <div class="label">// near-term milestone</div>
+        Cases is what it takes. Below it, the biomarker stays a paper. Above it, it enters the clinic. Getting there requires every cohort, every center, every pathologist who has been holding their cases close.
+      </div>
+    </div>
+  </section>
+
+  <section id="founders">
+    <div class="head">
+      <div class="num">[04]</div>
+      <h2>Founding <span class="accent">institutions.</span></h2>
+    </div>
+    <p>Three centers anchored the pilot with data, expertise, and pathology review, with collaborating sites contributing through TRACERx, CPTAC, and KORANYI. We are actively expanding.</p>
+
+    <div class="inst">
+      <div class="card">
+        <div class="row"><span>// 01</span><span class="dot"></span></div>
+        <div>
+          <div class="name">Boston Children's Hospital</div>
+          <div class="loc">Boston · MA</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="row"><span>// 02</span><span class="dot"></span></div>
+        <div>
+          <div class="name">Massachusetts General Hospital</div>
+          <div class="loc">Boston · MA</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="row"><span>// 03</span><span class="dot"></span></div>
+        <div>
+          <div class="name">The Francis Crick Institute</div>
+          <div class="loc">London · UK</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="join" class="join">
+    <h2 class="display"><span class="accent">Join</span> us.</h2>
+    <p>
+      If your group sits on a curated cohort of early-stage lung adenocarcinoma, even a few hundred cases, bring it in. The biomarker that translates this disease will be built by all of us, or by none of us.
+    </p>
+    <div class="actions">
+      <a href="mailto:join@prelude-consortium.org?subject=PRELUDE%3A%20cohort%20interest" class="cta">
+        Express interest <span class="arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div>// 2026 PRELUDE · Predicting Recurrence in Early Lung Adenocarcinoma</div>
+    <div style="display:flex;gap:24px">
+      <a href="https://www.medrxiv.org/content/10.64898/2026.01.28.26344973v3" target="_blank" rel="noopener">preprint ↗</a>
+      <a href="mailto:join@prelude-consortium.org">contact ↗</a>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
